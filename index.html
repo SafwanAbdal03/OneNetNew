@@ -9,9 +9,9 @@
             font-family: Arial, sans-serif;
             text-align: center;
         }
-        #imageContainer img {
-            max-width: 100%;
-            height: auto;
+        #base64Container {
+            margin-top: 20px;
+            white-space: pre-wrap; /* Ensures base64 data is displayed properly */
         }
     </style>
     <!-- Include jQuery from CDN -->
@@ -28,26 +28,28 @@
             };
 
             $.ajax(settings).done(function (response) {
-                console.log(response);
+                console.log("API Response:", response);
                 // Assuming the response structure is as mentioned
                 if (response.errno === 0 && response.data.datastreams.length > 0) {
-                    var imageData = response.data.datastreams[0].datapoints[0].value;
-                    decodeBase64Image(imageData);
+                    var base64Data = response.data.datastreams[0].datapoints.map(dp => dp.value).join('\n');
+                    console.log("Base64 Data:", base64Data);
+                    displayBase64Data(base64Data);
                 } else {
-                    console.error("No image data found in the response.");
+                    console.error("No base64 data found in the response.");
                 }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                console.error("API call failed: ", textStatus, errorThrown);
             });
 
-            function decodeBase64Image(base64Str) {
-                var img = document.createElement('img');
-                img.src = 'data:image/jpeg;base64,' + base64Str;
-                document.getElementById('imageContainer').appendChild(img);
+            function displayBase64Data(base64Str) {
+                var base64Container = document.getElementById('base64Container');
+                base64Container.textContent = base64Str;
             }
         });
     </script>
 </head>
 <body>
     <h1>OneNet Data Viewer</h1>
-    <div id="imageContainer"></div>
+    <div id="base64Container"></div>
 </body>
 </html>
