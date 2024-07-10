@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OneNet Data Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        #imageContainer img {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+    <!-- Include jQuery from CDN -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var settings = {
+                "url": "https://api.onenet.hk.chinamobile.com/devices/161379916/datapoints",
+                "method": "GET",
+                "timeout": 0,
+                "headers": {
+                    "API-Key": "YOUR_API_KEY" // Replace with your actual API key
+                },
+            };
+
+            $.ajax(settings).done(function (response) {
+                console.log(response);
+                // Assuming the response structure is as mentioned
+                if (response.errno === 0 && response.data.datastreams.length > 0) {
+                    var imageData = response.data.datastreams[0].datapoints[0].value;
+                    decodeBase64Image(imageData);
+                } else {
+                    console.error("No image data found in the response.");
+                }
+            });
+
+            function decodeBase64Image(base64Str) {
+                var img = document.createElement('img');
+                img.src = 'data:image/jpeg;base64,' + base64Str;
+                document.getElementById('imageContainer').appendChild(img);
+            }
+        });
+    </script>
+</head>
+<body>
+    <h1>OneNet Data Viewer</h1>
+    <div id="imageContainer"></div>
+</body>
+</html>
